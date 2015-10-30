@@ -1,0 +1,14 @@
+{
+  "name": "because-analysis",
+  "version": "1.0.0",
+  "description": "Looking at tweets with because",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "twitter": "^1.2.5"
+  }
+}
