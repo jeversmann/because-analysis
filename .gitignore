@@ -1,1 +1,4 @@
 node_modules
+
+# used for secrets
+.env

@@ -1,13 +1,14 @@
+require('dotenv').load();
 var Twitter = require('twitter');
 
 var client = new Twitter({
-  consumer_key: '',
-  consumer_secret: '',
-  access_token_key: '',
-  access_token_secret: ''
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token_key: process.env.ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-client.stream('statuses/filter', {track: 'javascript'}, function(stream) {
+client.stream('statuses/filter', {track: 'because'}, function(stream) {
   stream.on('data', function(tweet) {
     console.log(tweet.text);
   });
