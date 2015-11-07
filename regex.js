@@ -12,8 +12,9 @@ MongoClient.connect(url, function(err, db) {
   cursor.each(function (err, tweet) {
     assert.equal(err, null);
     if (tweet !== null) {
-      if (simple.test(tweet.text)) {
-        console.log(tweet.text);
+      var text = tweet.text.replace(/\r?\n|\r/g, ".; ");
+      if (simple.test(text)) {
+        console.log(text);
         simple_count++;
       }
     } else {

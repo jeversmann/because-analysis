@@ -14,7 +14,7 @@ var client = new Twitter({
 
 client.stream('statuses/filter', {track: 'because'}, function(stream) {
   stream.on('data', function(tweet) {
-    if (tweet.user.followers_count > 100 &&
+    if (tweet.user && tweet.user.followers_count > 100 &&
         tweet.lang === 'en' &&
         tweet.truncated === false) {
       MongoClient.connect(url, function(err, db) {
