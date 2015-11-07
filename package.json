@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^1.2.0",
-    "twitter": "^1.2.5"
+    "twitter": "^1.2.5",
+    "mongodb": "~2.0.47"
   }
 }
