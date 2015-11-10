@@ -11,6 +11,8 @@
   "dependencies": {
     "dotenv": "^1.2.0",
     "twitter": "^1.2.5",
-    "mongodb": "~2.0.47"
+    "mongodb": "~2.0.47",
+    "promise": "~7.0.4",
+    "stateful-process-command-proxy": "~1.0.0-beta.8"
   }
 }
