@@ -4,6 +4,7 @@ var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/because-db';
 var Promise = require('promise');
 var StatefulProcessCommandProxy = require('stateful-process-command-proxy');
+var fs = require('fs');
 
 var statefulProcessCommandProxy = new StatefulProcessCommandProxy(
     {
@@ -41,18 +42,24 @@ var statefulProcessCommandProxy = new StatefulProcessCommandProxy(
       preDestroyCommands: [ 'echo This ProcessProxy is being destroyed!' ]
     });
  
-// echo the value of our env variable set above in the constructor config
- 
+var subjects = {};
+
+function track_subject(word) {
+  if (subjects[word]) {
+   subjects[word]++;
+  } else {
+   subjects[word] = 1;
+  }
+}
 
 MongoClient.connect(url, function(err, db) {
-  var cursor = db.collection('tweets').find( {} ).limit(100);
+  var cursor = db.collection('single').find( {} ).limit(100);
 
   var classify_count = 0;
 
   cursor.each(function (err, tweet) {
     assert.equal(err, null);
     if (tweet !== null) {
-      //var text = tweet.text.replace(/\r?\n|\r/g, ".; ");
       statefulProcessCommandProxy.executeCommand('python classify.py "' + tweet.text + '"')
         .then(function(cmdResult) {
             console.log("testEnvVar value: Stdout: " + cmdResult.stdout);
