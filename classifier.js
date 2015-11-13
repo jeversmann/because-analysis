@@ -6,41 +6,40 @@ var Promise = require('promise');
 var StatefulProcessCommandProxy = require('stateful-process-command-proxy');
 var fs = require('fs');
 
-var statefulProcessCommandProxy = new StatefulProcessCommandProxy(
-    {
-      name: "classifier",
-      max: 20,
-      min: 10,
-      idleTimeoutMS: 10000,
- 
-      logFunction: function(severity,origin,msg) {
-          //console.log(severity.toUpperCase() + " " +origin+" "+ msg);
+var statefulProcessCommandProxy = new StatefulProcessCommandProxy({
+  name: "classifier",
+  max: 10,
+  min: 2,
+  idleTimeoutMS: 10000,
+
+  logFunction: function(severity,origin,msg) {
+      //console.log(severity.toUpperCase() + " " +origin+" "+ msg);
+  },
+
+  processCommand: '/bin/bash',
+  processArgs:  ['-s'],
+  processRetainMaxCmdHistory : 10,
+
+  processInvalidateOnRegex :
+      {
+        'any':[{regex:'.*error.*',flags:'ig'}],
+        'stdout':[{regex:'.*error.*',flags:'ig'}],
+        'stderr':[{regex:'.*error.*',flags:'ig'}]
       },
- 
-      processCommand: '/bin/bash',
-      processArgs:  ['-s'],
-      processRetainMaxCmdHistory : 10,
- 
-      processInvalidateOnRegex :
-          {
-            'any':[{regex:'.*error.*',flags:'ig'}],
-            'stdout':[{regex:'.*error.*',flags:'ig'}],
-            'stderr':[{regex:'.*error.*',flags:'ig'}]
-          },
- 
-      processCwd : './',
-      processEnvMap : {"testEnvVar":"value1"},
-      processUid : null,
-      processGid : null,
- 
-      initCommands: [ 'testInitVar=test' ],
- 
-      validateFunction: function(processProxy) {
-          return processProxy.isValid();
-      },
- 
-      preDestroyCommands: [ 'echo This ProcessProxy is being destroyed!' ]
-    });
+
+  processCwd : './',
+  processEnvMap : {"testEnvVar":"value1"},
+  processUid : null,
+  processGid : null,
+
+  initCommands: [ 'testInitVar=test' ],
+
+  validateFunction: function(processProxy) {
+      return processProxy.isValid();
+  },
+
+  preDestroyCommands: [ 'echo This ProcessProxy is being destroyed!' ]
+});
  
 var subjects = {};
 
@@ -53,7 +52,7 @@ function track_subject(word) {
 }
 
 MongoClient.connect(url, function(err, db) {
-  var cursor = db.collection('single').find( {} ).limit(100);
+  var cursor = db.collection('single').find( {} ).limit(10000);
 
   var classify_count = 0;
 
@@ -62,7 +61,12 @@ MongoClient.connect(url, function(err, db) {
     if (tweet !== null) {
       statefulProcessCommandProxy.executeCommand('python classify.py "' + tweet.text + '"')
         .then(function(cmdResult) {
-            console.log("testEnvVar value: Stdout: " + cmdResult.stdout);
+            if (cmdResult.stdout.length > 2) {
+              console.log("\nresult: " + cmdResult.stdout);
+              classify_count++;
+            } else {
+              // process.stdout.write(cmdResult.stdout);
+            }
         }).catch(function(error) {
             console.log("Error: " + error);
         });

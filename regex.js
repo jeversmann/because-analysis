@@ -17,7 +17,7 @@ function track_subject(word) {
 MongoClient.connect(url, function(err, db) {
   var simple = /because \w+(?=[.!?\n])/;
   var cursor = db.collection('single').find( {} );
-
+  var matched = db.collection('match');
   var simple_count = 0;
 
   cursor.each(function (err, tweet) {
@@ -29,6 +29,12 @@ MongoClient.connect(url, function(err, db) {
         console.log(text);
         track_subject(matches[0]);
         simple_count++;
+        var doc = {
+          text: tweet.text,
+          id: tweet.id,
+          subject: matches[0]
+        };
+        matched.insertOne(doc, function(err, result) {});
       }
     } else {
       console.log(simple_count);
